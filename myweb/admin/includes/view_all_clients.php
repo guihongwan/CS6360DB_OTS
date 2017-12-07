@@ -7,12 +7,14 @@
             <th>Lastname</th>
             <th>Email</th>
             <th>Role</th>
-            <th>Operations</th>
+            <th>Oil Balance</th>
+            <th>Cash Balance</th>
+            <!--<th>Operations</th>-->
         </tr>
     </thead>
     <tbody>
     <?php //Find all users
-    $query = "SELECT * FROM users ";
+    $query = "SELECT * FROM clients ";
     $select_all_users = mysqli_query($connection, $query);  
     while($row = mysqli_fetch_assoc($select_all_users)){
         $user_id = $row['user_id'];
@@ -23,6 +25,8 @@
         $user_email = $row['user_email'];
         $user_image = $row['user_image'];
         $user_role = $row['user_role'];
+        $oil_balance = $row['oil_balance'];
+        $cash_balance = $row['cash_balance'];
 
         echo "<tr>";
         echo "<td>$user_id</td>";
@@ -31,7 +35,10 @@
         echo "<td>$user_lastname</td>";
         echo "<td>$user_email</td>";
         echo "<td>$user_role</td>";
+        echo "<td>$oil_balance</td>";
+        echo "<td>$cash_balance</td>";
         
+        /*
         echo "<td>";
         if($user_role != 'admin'){
             echo "<a href='users.php?change_to_admin={$user_id}'>Admin</a>";
@@ -52,6 +59,7 @@
         echo "<a href='users.php?delete={$user_id}'>Delete</a>";
         
         echo "</td>";
+        */
     }
         
     if(isset($_GET['change_to_admin'])){

@@ -26,15 +26,15 @@
                 $db_role =$row['user_role'];
                 $oil_balance =$row['oil_balance'];
                 $cash_balance =$row['cash_balance'];
+                
+                $password = crypt($password, $db_password);
             }
         }else{
             die("Query failed.".mysqli_error($connection));
         }
-
-        $password = crypt($password, $db_password);
-        echo "log in failed.1";
         
-        if( isset($db_username) && ($username === $db_username) && ($password === $db_password)){
+        if( isset($db_username) && ($username === $db_username) &&
+              isset($db_username) && ($password === $db_password) ){
                 
                 $_SESSION['user_username'] = $db_username;
                 $_SESSION['user_firstname'] = $db_firstname;
@@ -44,7 +44,7 @@
                 $_SESSION['cash_balance'] = $cash_balance;
             
 
-                //header("Location:../transactions.php");
+                header("Location:../transactions.php");
                 
         } else {    
             //if there is no such clients, query uers
@@ -59,14 +59,15 @@
                     $db_firstname =$row['user_firstname'];
                     $db_lastname =$row['user_lastname'];
                     $db_role =$row['user_role'];
+                    
+                    $password = crypt($password, $db_password);
                 }
             }else{
                 die("Query failed.".mysqli_error($connection));
             }
-
-            $password = crypt($password, $db_password);
-            echo "log in failed.2";
-            if( isset($db_username) && ($username === $db_username) && ($password === $db_password)){
+            
+            if( isset($db_username) && ($username === $db_username) &&
+                  isset($db_password) && ($password === $db_password) ){
 
                     $_SESSION['user_username'] = $db_username;
                     $_SESSION['user_firstname'] = $db_firstname;
@@ -74,9 +75,9 @@
                     $_SESSION['user_role'] = $db_role;
                     //admin
                     if($db_role == "admin"){
-                        //header("Location:../admin");
+                        header("Location:../admin");
                     }else{
-                        //header("Location:../transactions.php");
+                        header("Location:../transactions.php");
                     }
 
             } else {    

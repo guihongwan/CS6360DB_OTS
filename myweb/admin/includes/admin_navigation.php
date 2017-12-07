@@ -60,6 +60,9 @@
                                 <a href="users.php">View All Users</a>
                             </li>
                             <li>
+                                <a href="clients.php">View All Clients</a>
+                            </li>
+                            <li>
                                 <a href="users.php?source=add_user">Add User</a>
                             </li>
                         </ul>

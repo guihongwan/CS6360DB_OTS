@@ -47,10 +47,10 @@ if(isset($_POST['create_user'])){
       <div class="form-group">
        
        <select name="user_role" id="">
-          <option value="client">Select Options</option>
+          <option value="trader">Select Options</option>
           <option value="admin">Admin</option>
+          <option value="manager">Manager</option>
           <option value="trader">Trader</option>
-          <option value="client">Client</option>
        </select>
        
       </div>
