@@ -11,33 +11,38 @@ if(isset($_POST['submit'])){
     $user_firstname = $_POST['firstname'];
     $user_lastname = $_POST['lastname'];
     $user_email = $_POST['email'];
+    $user_phone = $_POST['phone'];
     $user_password = $_POST['password'];
+    $user_street = $_POST['street'];
+    $user_city = $_POST['city'];
+    $user_state = $_POST['state'];
+    $user_zipcode = $_POST['zipcode'];
+    
     
     $username = mysqli_real_escape_string($connection, $username);
     $user_firstname = mysqli_real_escape_string($connection, $user_firstname);
     $user_lastname = mysqli_real_escape_string($connection, $user_lastname);
     $user_email = mysqli_real_escape_string($connection, $user_email);
+    $user_phone = mysqli_real_escape_string($connection, $user_phone);
     $user_password = mysqli_real_escape_string($connection, $user_password);
+    $user_street = mysqli_real_escape_string($connection, $user_street);
+    $user_city = mysqli_real_escape_string($connection, $user_city);
+    $user_state = mysqli_real_escape_string($connection, $user_state);
+    $user_zipcode = mysqli_real_escape_string($connection, $user_zipcode);
     
     if(!empty($username) && !empty($user_firstname) && !empty($user_lastname) 
-          && !empty($user_email) && !empty($user_password) ){
+          && !empty($user_email) && !empty($user_phone) && !empty($user_password) 
+          && !empty($user_street) && !empty($user_city) && !empty($user_state) && !empty($user_zipcode)){
         
-        $query = "SELECT user_randSalt FROM users ";
-        $select_randsalt_query = mysqli_query($connection,$query);
-        if(!$select_randsalt_query){
-            die("Qeury failed.".mysqli_error($connection));
-        }
-        while($row = mysqli_fetch_array($select_randsalt_query)){
-            $salt = $row['user_randSalt'];
-        }
-        if(!isset($salt)){
-            $salt = "$2y$10$databasedbluckybin1011";//default
-        }
+        include "includes/password_salt.php";
         
         $user_password = crypt($user_password, $salt);
         
-        $query = "INSERT INTO users(user_firstname,user_lastname,user_role,user_username,user_email,user_password)";
-        $query .= "VALUES('{$user_firstname}','{$user_lastname}','subscriber','{$username}','{$user_email}','{$user_password}') ";
+            
+        //roles:admin,trader,client
+        //users can sign up as 'client'.
+        $query = "INSERT INTO clients(user_firstname,user_lastname,user_username,user_email,user_phone,user_password,street,city,state,zipcode)";
+        $query .= "VALUES('{$user_firstname}','{$user_lastname}','{$username}','{$user_email}','{$user_phone}','{$user_password}','{$user_street}','{$user_city}','{$user_state}','{$user_zipcode}') ";
         $create_user_query = mysqli_query($connection, $query);
         if(!$create_user_query){
             die('Failed to create user.'.mysqli_error($connection));
@@ -81,9 +86,29 @@ if(isset($_POST['submit'])){
                             <label for="email" class="sr-only">Email</label>
                             <input type="email" name="email" id="email" class="form-control" placeholder="somebody@example.com">
                         </div>
+                        <div class="form-group">
+                            <label for="phone" class="sr-only">Phone</label>
+                            <input type="text" name="phone" id="phone" class="form-control" placeholder="Phone">
+                        </div>
                          <div class="form-group">
                             <label for="password" class="sr-only">Password</label>
                             <input type="password" name="password" id="key" class="form-control" placeholder="Password">
+                        </div>
+                        <div class="form-group">
+                            <label for="street" class="sr-only">Street</label>
+                            <input type="text" name="street" id="street" class="form-control" placeholder="Street">
+                        </div>
+                        <div class="form-group">
+                            <label for="city" class="sr-only">City</label>
+                            <input type="text" name="city" id="city" class="form-control" placeholder="City">
+                        </div>
+                        <div class="form-group">
+                            <label for="state" class="sr-only">State</label>
+                            <input type="text" name="state" id="state" class="form-control" placeholder="State">
+                        </div>
+                        <div class="form-group">
+                            <label for="zipcode" class="sr-only">Zipcode</label>
+                            <input type="text" name="zipcode" id="zipcode" class="form-control" placeholder="Zipcode">
                         </div>
                 
                         <input type="submit" name="submit" id="btn-login" class="btn btn-custom btn-lg btn-block" value="Register">

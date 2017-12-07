@@ -101,7 +101,7 @@
         }
         $mysqli->close();
 
-        //echo(phpinfo());
+        echo(phpinfo());
     ?>
     
 </body>

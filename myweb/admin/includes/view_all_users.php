@@ -37,12 +37,18 @@
             echo "<a href='users.php?change_to_admin={$user_id}'>Admin</a>";
             echo " . ";
         }
-        if($user_role != 'subscriber'){
-            echo "<a href='users.php?change_to_sub={$user_id}'>Subscriber</a>";
+        if($user_role != 'trader'){
+            echo "<a href='users.php?change_to_trad={$user_id}'>Trader</a>";
             echo " . ";
         }
+        if($user_role != 'client'){
+            echo "<a href='users.php?change_to_cli={$user_id}'>Client</a>";
+            echo " . ";
+        }
+        
         echo "<a href='users.php?source=edit_user&edit_user={$user_id}'>Edit</a>";
         echo " . ";
+        
         echo "<a href='users.php?delete={$user_id}'>Delete</a>";
         
         echo "</td>";
@@ -55,9 +61,16 @@
         header("Location: users.php");
     }
     
-    if(isset($_GET['change_to_sub'])){
-        $the_user_id = $_GET['change_to_sub'];
-        $query = "UPDATE users SET user_role = 'subscriber' WHERE user_id = $the_user_id ";
+    if(isset($_GET['change_to_trad'])){
+        $the_user_id = $_GET['change_to_trad'];
+        $query = "UPDATE users SET user_role = 'trader' WHERE user_id = $the_user_id ";
+        $change_to_subscriber_query = mysqli_query($connection, $query);
+        header("Location: users.php");
+        
+    }
+    if(isset($_GET['change_to_cli'])){
+        $the_user_id = $_GET['change_to_cli'];
+        $query = "UPDATE users SET user_role = 'client' WHERE user_id = $the_user_id ";
         $change_to_subscriber_query = mysqli_query($connection, $query);
         header("Location: users.php");
         

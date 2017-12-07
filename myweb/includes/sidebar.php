@@ -23,7 +23,7 @@
                         <input name="username" type="text" class="form-control" placeholder="Enter Username">
                       </div><!-- /.username-group -->
                       <div class="input-group">
-                        <input name="password" type="text" class="form-control" placeholder="Enter Password">
+                        <input name="password" type="password" class="form-control" placeholder="Enter Password">
                         <span class="input-group-btn">
                            <button class="btn btn-primary" name="login" type="submit">Submit</button>
                         </span>
@@ -39,14 +39,15 @@
                     $select_all_categories_sidebar = mysqli_query($connection, $query);
                 ?>    
                 <div class="well">
-                    <h4>Blog Categories</h4>
+                    <h4>Categories</h4>
                     <div class="row">
                         <div class="col-lg-6">
                             <ul class="list-unstyled">
                                <?php
                                while($row = mysqli_fetch_assoc($select_all_categories_sidebar)){
                                  $cat_title = $row['cat_title'];
-                                 echo "<li><a href='#'>$cat_title</a></li>";
+                                 $lower_cat_title = strtolower($cat_title);
+                                 echo "<li><a href='$lower_cat_title.php'>$cat_title</a></li>";
                                }
                                  ?>
                             </ul>

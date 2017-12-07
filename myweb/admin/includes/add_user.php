@@ -7,6 +7,19 @@ if(isset($_POST['create_user'])){
     $user_email        = $_POST['user_email'];
     $user_password     = $_POST['user_password'];
     
+    //for security
+    $user_firstname    = mysqli_real_escape_string($connection,$user_firstname);
+    $user_lastname    = mysqli_real_escape_string($connection,$user_lastname);
+    $user_role    = mysqli_real_escape_string($connection,$user_role);
+    $username    = mysqli_real_escape_string($connection,$username);
+    $user_email    = mysqli_real_escape_string($connection,$user_email);
+    $user_password    = mysqli_real_escape_string($connection,$user_password);
+    
+    //get salt
+    include "../includes/password_salt.php";
+    $user_password = crypt($user_password, $salt);
+    
+    
     $query = "INSERT INTO users(user_firstname,user_lastname,user_role,user_username,user_email,user_password)";
     $query .= "VALUES('{$user_firstname}','{$user_lastname}','{$user_role}','{$username}','{$user_email}','{$user_password}') ";
     $create_user_query = mysqli_query($connection, $query);
@@ -34,9 +47,10 @@ if(isset($_POST['create_user'])){
       <div class="form-group">
        
        <select name="user_role" id="">
-          <option value="subscriber">Select Options</option>
+          <option value="client">Select Options</option>
           <option value="admin">Admin</option>
-          <option value="subscriber">Subscriber</option>
+          <option value="trader">Trader</option>
+          <option value="client">Client</option>
        </select>
        
       </div>
