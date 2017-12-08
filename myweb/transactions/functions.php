@@ -3,24 +3,39 @@
 function getOilPrice($oil_id){
     global $connection;
     $query = "SELECT oil_price FROM oil_information WHERE oil_id = $oil_id";
-    $select_all_posts_query = mysqli_query($connection, $query);
-    while($row = mysqli_fetch_assoc($select_all_posts_query)){
-        $oil_price =$row['oil_price'];
-        //echo "oil_pric:".$oil_price;
-        return $oil_price;
+    
+    $stmt = $connection->prepare($query);
+    $stmt->execute();
+    if (!($res = $stmt->get_result())) {
+        echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
     }
+    while( $row = $res->fetch_assoc() ){
+        $oil_price =$row['oil_price'];
+        //echo "oil_pric:".$oil_price;    
+    }
+    $res->close();
+    return $oil_price;
 }
 
 function getCommissionRate($client_id){
     global $connection;
     $query = "SELECT commission_rate FROM classification, clients ";
     $query .=  "WHERE clients.user_id = $client_id and classification.level_name = clients.level_name ";
-    $select_all_posts_query = mysqli_query($connection, $query);
-    while($row = mysqli_fetch_assoc($select_all_posts_query)){
+
+    $stmt = $connection->prepare($query);
+    $stmt->execute();
+    if (!($res = $stmt->get_result())) {
+        echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
+    }
+    while( $row = $res->fetch_assoc() ){
+        
         $commission_rate =$row['commission_rate'];
         //echo "commission_rate:".$commission_rate;
-        return $commission_rate;
+        
     }
+    
+    $res->close();
+    return $commission_rate;
 }
 
 function getOilBalance($client_id){
@@ -43,6 +58,42 @@ function getCashBalance($client_id){
           //echo "cash_balance:".$cash_balance;
     }
     return $cash_balance;
+}
+
+function updateOilBalance($client_id,$new_oil_balance){
+     global $connection;
+     $query = "UPDATE clients SET ";
+     $query .="oil_balance = '$new_oil_balance' ";
+     $query .= "WHERE user_id = $client_id ";
+    
+     $update_oil_balance = mysqli_query($connection, $query);
+     if(!$update_oil_balance){
+            die('Failed to edit user.'.mysqli_error($connection));
+      }
+}
+
+function updateCashBalance($client_id,$new_cash_balance){
+     global $connection;
+     $query = "UPDATE clients SET ";
+     $query .="cash_balance = '$new_cash_balance' ";
+     $query .= "WHERE user_id = $client_id ";
+    
+     $update_cash_balance = mysqli_query($connection, $query);
+     if(!$update_cash_balance){
+            die('Failed to edit user.'.mysqli_error($connection));
+      }
+}
+
+function upgradeClientLevel($client_id){
+     global $connection;
+     $query = "UPDATE clients SET ";
+     $query .="level_name = 'Gold' ";
+     $query .= "WHERE user_id = $client_id ";
+    
+     $update_level = mysqli_query($connection, $query);
+     if(!$update_level){
+            die('Failed to edit user.'.mysqli_error($connection));
+      }
 }
 
 function getTraderId($client_id){

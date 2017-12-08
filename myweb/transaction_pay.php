@@ -21,25 +21,19 @@
       
       //update cash balance
       $new_cash_balance = $cash_balance + $pay_amount;
-      $query = "UPDATE clients SET ";
-      $query .="cash_balance = '$new_cash_balance' ";
-      $query .= "WHERE user_id = $client_id ";
-
-      $update_cash_balance = mysqli_query($connection, $query);
-      if(!$update_cash_balance){
-            die('Failed to edit user.'.mysqli_error($connection));
-      }
+      updateCashBalance($client_id, $new_cash_balance);
       
       //issue payment
-      $query = "INSERT INTO payment(client_id,date,amount,trader_id)";
-      $query .= "VALUES('{$client_id}','{$date}','{$pay_amount}','{$trader_id}') ";
-      
-      $issue_transaction = mysqli_query($connection, $query);
-      if(!$issue_transaction){
-          die('Issue payment fail.'.mysqli_error($connection));
-      } else {
-          header("Location:transaction_success.php");
-      }
+      $query = "INSERT INTO payment(client_id,date,amount,trader_id) ";
+      $query .= "VALUES (?, ?, ?, ?) ";
+        
+        //i - integer  d - double s - string  b - BLOB
+        $stmt = $connection->prepare($query);
+        $stmt->bind_param("isdi", $client_id, $date, $pay_amount,$trader_id);
+
+        $stmt->execute();
+        $stmt->close();
+      header("Location:transaction_success.php");
       
   }
 ?>

@@ -1,8 +1,14 @@
 
 <?php
 $query = "SELECT * FROM oil_information where oil_id = $oil_id";
-$select_all_posts_query = mysqli_query($connection, $query);
-while($row = mysqli_fetch_assoc($select_all_posts_query)){
+
+$stmt = $connection->prepare($query);
+$stmt->execute();
+if (!($res = $stmt->get_result())) {
+    echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
+}
+while( $row = $res->fetch_assoc() ){
+    
     $oil_id =$row['oil_id'];
     $oil_type =$row['oil_type'];
     $oil_price =$row['oil_price'];
@@ -16,4 +22,5 @@ while($row = mysqli_fetch_assoc($select_all_posts_query)){
     
     echo "</h3>";
 }
+$res->close();
 ?> 

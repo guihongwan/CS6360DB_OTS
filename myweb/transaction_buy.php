@@ -49,41 +49,59 @@ date_default_timezone_set('UTC');
       $oil_amount    = mysqli_real_escape_string($connection,$oil_amount);
       $commission_type    = mysqli_real_escape_string($connection,$commission_type);
       
+      //update cash balance
+      $cash_balance = getCashBalance($client_id);
+      $new_cash_balance = $cash_balance-$value;
+      if(isset($commission_cash)){
+          $new_cash_balance = $new_cash_balance-$commission_cash;
+      }
+      if($new_cash_balance < 0){
+          die("The cash is not enought!!!");
+      } else {
+          updateCashBalance($client_id, $new_cash_balance);
+      }
+      
+      //update oil balance
+      $oil_balance = getOilBalance($client_id);
+      $new_oil_balance = $oil_balance+$oil_amount;
+      if(isset($commission_oil)){
+          $new_oil_balance = $new_oil_balance-$commission_oil;
+      }
+      updateOilBalance($client_id, $new_oil_balance);
+      
       //issue transaction
       if(isset($commission_oil)){
-          $query = "INSERT INTO oil_transaction(client_id,oil_id,date,oil_amount,value,commision_oil,commision_rate,oil_price)";
-          $query .= "VALUES('{$client_id}','{$oil_id}','{$date}','{$oil_amount}','{$value}','{$commission_oil}','{$commission_rate}','{$oil_price}') ";
-      } else {
-          $query = "INSERT INTO oil_transaction(client_id,oil_id,date,oil_amount,value,commision_cash,commision_rate,oil_price)";
-          $query .= "VALUES('{$client_id}','{$oil_id}','{$date}','{$oil_amount}','{$value}','{$commission_cash}','{$commission_rate}','{$oil_price}') ";
-      }
+          $query = "INSERT INTO oil_transaction(client_id,oil_id,date,oil_amount,value,commision_oil,commision_rate,oil_price) ";
+//          $query .= "VALUES('{$client_id}','{$oil_id}','{$date}','{$oil_amount}','{$value}','{$commission_oil}','{$commission_rate}','{$oil_price}') ";
+          
+          $query .= "VALUES (?, ?, ?, ?, ?, ?, ?, ?) ";
 
-      $issue_transaction = mysqli_query($connection, $query);
-      if(!$issue_transaction){
-          die('Issue transaction fail.'.mysqli_error($connection));
+          //i - integer  d - double s - string  b - BLOB
+          $stmt = $connection->prepare($query);
+          $stmt->bind_param("iisddsdd", $client_id, $oil_id, $date, $oil_amount, $value, $commission_oil, $commission_rate, $oil_price);
+          
+          
+      } else {
+          $query = "INSERT INTO oil_transaction(client_id,oil_id,date,oil_amount,value,commision_cash,commision_rate,oil_price) ";
+//          $query .= "VALUES('{$client_id}','{$oil_id}','{$date}','{$oil_amount}','{$value}','{$commission_cash}','{$commission_rate}','{$oil_price}') ";
+          $query .= "VALUES (?, ?, ?, ?, ?, ?, ?, ?) ";
+
+          //i - integer  d - double s - string  b - BLOB
+          $stmt = $connection->prepare($query);
+          $stmt->bind_param("iisddsdd", $client_id, $oil_id, $date, $oil_amount, $value, $commission_cash, $commission_rate, $oil_price);
+      }
+        
+      $stmt->execute();
+      $stmt->close();
+      
+      //update user level
+      //echo $oil_amount;
+      if($oil_amount > 30){
+          //echo "upgradeClientLevel";
+          upgradeClientLevel($client_id);
       }
       
-      //add $oil_amount the client
-      $query = "SELECT oil_balance FROM clients WHERE user_id = '{$client_id}' ";
-      $select_oil_balance_query = mysqli_query($connection, $query);
-      while($row = mysqli_fetch_assoc($select_oil_balance_query)){
-          $oil_balance = $row['oil_balance'];
-          //echo "oil_balance:".$oil_balance;
-      }
-
-      $new_oil_balance = $oil_balance+$oil_amount;
-      //echo $new_oil_balance;
-      
-      $query = "UPDATE clients SET ";
-      $query .="oil_balance = '$new_oil_balance' ";
-      $query .= "WHERE user_id = $client_id ";
-    
-      $update_oil_balance = mysqli_query($connection, $query);
-      if(!$update_oil_balance){
-            die('Failed to edit user.'.mysqli_error($connection));
-      } else {
-          header("Location:transaction_success.php");
-      }
+      header("Location:transaction_success.php");
       
   }
 ?>

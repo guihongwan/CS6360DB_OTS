@@ -38,9 +38,12 @@ date_default_timezone_set('UTC');
                 <?php
                 //fetch clients information related current trader
                 $query = "SELECT * FROM clients WHERE trader_id = '{$_SESSION['user_id']}' ";
-                $select_all_posts_query = mysqli_query($connection, $query);
-                while($row = mysqli_fetch_assoc($select_all_posts_query)){
-                    
+                $stmt = $connection->prepare($query);
+                $stmt->execute();
+                if (!($res = $stmt->get_result())) {
+                    echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
+                }
+                while( $row = $res->fetch_assoc() ){
                     $client_id =$row['user_id'];
                     $client_firstname =$row['user_firstname'];
                     $client_lastname =$row['user_lastname'];
@@ -68,6 +71,7 @@ date_default_timezone_set('UTC');
                     echo "</td>";
                     
                 }
+                $res->close();
                 ?>   
                 </tbody>   
                 </table>
@@ -95,9 +99,13 @@ date_default_timezone_set('UTC');
                 $query = "SELECT transaction_id,user_id,user_firstname,user_lastname,date,oil_amount,value,commision_oil,commision_cash,status FROM clients, oil_transaction WHERE 
                 clients.user_id = oil_transaction.client_id and 
                 clients.trader_id = '{$_SESSION['user_id']}' ";
-                    
-                $select_all_posts_query = mysqli_query($connection, $query);
-                while($row = mysqli_fetch_assoc($select_all_posts_query)){
+
+                $stmt = $connection->prepare($query);
+                $stmt->execute();
+                if (!($res = $stmt->get_result())) {
+                    echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
+                }
+                while( $row = $res->fetch_assoc() ){
                     
                     $transaction_id =$row['transaction_id'];
                     $client_id =$row['user_id'];
@@ -139,6 +147,7 @@ date_default_timezone_set('UTC');
                     }
                     
                 }
+                $res->close();
                 ?>   
                 </tbody>   
                 </table>
@@ -164,10 +173,13 @@ date_default_timezone_set('UTC');
                 $query = "SELECT transaction_id,user_firstname,user_lastname,date,amount,status FROM clients, payment WHERE 
                 clients.user_id = payment.client_id and 
                 payment.trader_id = '{$_SESSION['user_id']}' ";
-                    
-                $select_payment_query = mysqli_query($connection, $query);
-                while($row = mysqli_fetch_assoc($select_payment_query)){
-                    
+                
+                $stmt = $connection->prepare($query);
+                $stmt->execute();
+                if (!($res = $stmt->get_result())) {
+                    echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
+                }
+                while( $row = $res->fetch_assoc() ){
                     $transaction_id =$row['transaction_id'];
                     $client_firstname =$row['user_firstname'];
                     $client_lastname =$row['user_lastname'];
@@ -194,6 +206,7 @@ date_default_timezone_set('UTC');
                     }
                     
                 }
+                $res->close();
                 ?>   
                 </tbody>   
                 </table> 

@@ -33,9 +33,12 @@
                 <?php
                 //fetch clients information related current trader
                 $query = "SELECT * FROM clients WHERE user_id = '{$_SESSION['user_id']}' ";
-                $select_all_posts_query = mysqli_query($connection, $query);
-                while($row = mysqli_fetch_assoc($select_all_posts_query)){
-                    
+                $stmt = $connection->prepare($query);
+                $stmt->execute();
+                if (!($res = $stmt->get_result())) {
+                    echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
+                }
+                while( $row = $res->fetch_assoc() ){                  
                     $client_id =$row['user_id'];
                     $client_firstname =$row['user_firstname'];
                     $client_lastname =$row['user_lastname'];
@@ -63,6 +66,7 @@
                     echo "</td>";
                     
                 }
+                $res->close();
                 ?>   
                   </tbody>   
                 </table>
@@ -89,12 +93,13 @@
                 $query = "SELECT transaction_id,user_id,user_firstname,user_lastname,date,oil_amount,value,commision_oil,commision_cash FROM clients, oil_transaction WHERE 
                 clients.user_id = oil_transaction.client_id and 
                 clients.user_id = '{$_SESSION['user_id']}' ";
-                    
-                $total_value = 0;
-                    
-                $select_all_posts_query = mysqli_query($connection, $query);
-                while($row = mysqli_fetch_assoc($select_all_posts_query)){
-                    
+                
+                $stmt = $connection->prepare($query);
+                $stmt->execute();
+                if (!($res = $stmt->get_result())) {
+                    echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
+                }
+                while( $row = $res->fetch_assoc() ){
                     $transaction_id =$row['transaction_id'];
                     $client_id =$row['user_id'];
                     $client_firstname =$row['user_firstname'];
@@ -122,6 +127,7 @@
                     echo "<td>$commision_fee</td>";
                     
                 }
+                $res->close();
                 ?>   
                 </tbody>   
                 </table>
@@ -141,10 +147,13 @@
                 $query = "SELECT * FROM payment WHERE client_id = '{$_SESSION['user_id']}' ";
                     
                 $total_payment = 0;
-                    
-                $select_payment_query = mysqli_query($connection, $query);
-                while($row = mysqli_fetch_assoc($select_payment_query)){
-                    
+                                   
+                $stmt = $connection->prepare($query);
+                $stmt->execute();
+                if (!($res = $stmt->get_result())) {
+                    echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
+                }
+                while( $row = $res->fetch_assoc() ){
                     $transaction_id =$row['transaction_id'];
                     $date =$row['date'];
                     $amount =$row['amount'];
@@ -156,6 +165,7 @@
                     echo "<td>$date</td>";
                     
                 }
+                $res->close();
                 ?>   
                 </tbody>   
                 </table> 
