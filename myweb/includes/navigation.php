@@ -23,8 +23,12 @@
                     <?php
                     
                     $query = "SELECT * FROM categories ";
-                    $select_all_categories_query = mysqli_query($connection, $query);
-                    while($row = mysqli_fetch_assoc($select_all_categories_query)){
+                    $stmt = $connection->prepare($query);
+                    $stmt->execute();
+                    if (!($res = $stmt->get_result())) {
+                        echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
+                    }
+                    while( $row = $res->fetch_assoc() ){
                         $cat_title = $row['cat_title'];
                         $lower_cat_title = strtolower($cat_title);
                         echo "<li><a href='$lower_cat_title.php'>$cat_title</a></li>";

@@ -66,10 +66,15 @@
                             oil_transaction.date >= '{$start_date}' and 
                             oil_transaction.date <= '{$end_date}'
                             ";
+                        
+                            $stmt = $connection->prepare($query);
+                            $stmt->execute();
+                            if (!($res = $stmt->get_result())) {
+                                echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
+                            }
 
-
-                            $select_all_posts_query = mysqli_query($connection, $query);
-                            while($row = mysqli_fetch_assoc($select_all_posts_query)){
+                            
+                            while( $row = $res->fetch_assoc() ){
                                 //echo "<br> innner ".$user_id;
                                 $transaction_id =$row['transaction_id'];
                                 $client_id =$row['user_id'];
@@ -98,6 +103,7 @@
                                 echo "<td>$status</td>";
                                 echo "</tr>";
                             }
+                            $res->close();
                                 
                         ?>
                         </tbody>   

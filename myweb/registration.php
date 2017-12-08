@@ -18,7 +18,7 @@ if(isset($_POST['submit'])){
     $user_state = $_POST['state'];
     $user_zipcode = $_POST['zipcode'];
     
-    
+    //for security
     $username = mysqli_real_escape_string($connection, $username);
     $user_firstname = mysqli_real_escape_string($connection, $user_firstname);
     $user_lastname = mysqli_real_escape_string($connection, $user_lastname);
@@ -37,16 +37,16 @@ if(isset($_POST['submit'])){
         include "includes/password_salt.php";
         
         $user_password = crypt($user_password, $salt);
+              
+        $query = "INSERT INTO clients(user_firstname,user_lastname,user_username,user_email,user_phone,user_password,street,city,state,zipcode) ";
+        $query .= "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
         
-            
-        //roles:admin,trader,client
-        //users can sign up as 'client'.
-        $query = "INSERT INTO clients(user_firstname,user_lastname,user_username,user_email,user_phone,user_password,street,city,state,zipcode)";
-        $query .= "VALUES('{$user_firstname}','{$user_lastname}','{$username}','{$user_email}','{$user_phone}','{$user_password}','{$user_street}','{$user_city}','{$user_state}','{$user_zipcode}') ";
-        $create_user_query = mysqli_query($connection, $query);
-        if(!$create_user_query){
-            die('Failed to create user.'.mysqli_error($connection));
-        }
+        //i - integer  d - double s - string  b - BLOB
+        $stmt = $connection->prepare($query);
+        $stmt->bind_param("ssssssssss", $user_firstname, $user_lastname, $username, $user_email, $user_phone, $user_password, $user_street, $user_city, $user_state, $user_zipcode);
+        
+        $stmt->execute();
+        $stmt->close();
         
         $message = "* Your Registration has been submitted.";
         
