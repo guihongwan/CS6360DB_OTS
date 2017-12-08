@@ -41,11 +41,18 @@ function getCommissionRate($client_id){
 function getOilBalance($client_id){
     global $connection;
     $query = "SELECT oil_balance FROM clients WHERE user_id = '{$client_id}' ";
-    $select_oil_balance_query = mysqli_query($connection, $query);
-    while($row = mysqli_fetch_assoc($select_oil_balance_query)){
+    
+    $stmt = $connection->prepare($query);
+    $stmt->execute();
+    if (!($res = $stmt->get_result())) {
+        echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
+    }
+    while( $row = $res->fetch_assoc() ){
+        
         $oil_balance = $row['oil_balance'];
           //echo "oil_balance:".$oil_balance;
     }
+    $res->close();
     return $oil_balance;
 }
 
@@ -62,38 +69,63 @@ function getCashBalance($client_id){
 
 function updateOilBalance($client_id,$new_oil_balance){
      global $connection;
-     $query = "UPDATE clients SET ";
-     $query .="oil_balance = '$new_oil_balance' ";
-     $query .= "WHERE user_id = $client_id ";
+    $query = "UPDATE clients SET ";
+    $query .="oil_balance = ? ";
+    $query .= "WHERE user_id = ? ";
     
-     $update_oil_balance = mysqli_query($connection, $query);
-     if(!$update_oil_balance){
-            die('Failed to edit user.'.mysqli_error($connection));
-      }
+    $stmt = $connection->prepare($query);
+    $stmt->bind_param('di', $new_oil_balance, $client_id);
+    $stmt->execute();
+    $stmt->close();
+//     $query = "UPDATE clients SET ";
+//     $query .="oil_balance = '$new_oil_balance' ";
+//     $query .= "WHERE user_id = $client_id ";
+//    
+//     $update_oil_balance = mysqli_query($connection, $query);
+//     if(!$update_oil_balance){
+//            die('Failed to edit user.'.mysqli_error($connection));
+//      }
 }
 
 function updateCashBalance($client_id,$new_cash_balance){
      global $connection;
-     $query = "UPDATE clients SET ";
-     $query .="cash_balance = '$new_cash_balance' ";
-     $query .= "WHERE user_id = $client_id ";
+    $query = "UPDATE clients SET ";
+    $query .="cash_balance = ? ";
+    $query .= "WHERE user_id = ? ";
     
-     $update_cash_balance = mysqli_query($connection, $query);
-     if(!$update_cash_balance){
-            die('Failed to edit user.'.mysqli_error($connection));
-      }
+    $stmt = $connection->prepare($query);
+    $stmt->bind_param('di', $new_cash_balance, $client_id);
+    $stmt->execute();
+    $stmt->close();
+//     $query = "UPDATE clients SET ";
+//     $query .="cash_balance = '$new_cash_balance' ";
+//     $query .= "WHERE user_id = $client_id ";
+//    
+//     $update_cash_balance = mysqli_query($connection, $query);
+//     if(!$update_cash_balance){
+//            die('Failed to edit user.'.mysqli_error($connection));
+//      }
 }
 
 function upgradeClientLevel($client_id){
      global $connection;
-     $query = "UPDATE clients SET ";
-     $query .="level_name = 'Gold' ";
-     $query .= "WHERE user_id = $client_id ";
+    $query = "UPDATE clients SET ";
+    $query .="level_name = ? ";
+    $query .= "WHERE user_id = ? ";
     
-     $update_level = mysqli_query($connection, $query);
-     if(!$update_level){
-            die('Failed to edit user.'.mysqli_error($connection));
-      }
+    $level = 'Gold';
+    $stmt = $connection->prepare($query);
+    $stmt->bind_param('si', $level, $client_id);
+    $stmt->execute();
+    $stmt->close();
+//     $query = "UPDATE clients SET ";
+//     $query .="level_name = 'Gold' ";
+//     $query .= "WHERE user_id = $client_id ";
+//    
+//     $update_level = mysqli_query($connection, $query);
+//     if(!$update_level){
+//            die('Failed to edit user.'.mysqli_error($connection));
+//      }
 }
 
 function getTraderId($client_id){
@@ -108,23 +140,34 @@ function getTraderId($client_id){
 function updateOilTransactionStatus($transaction_id, $status){
     global $connection;
     $query = "UPDATE oil_transaction SET ";
-    $query .="status = '$status' ";
-    $query .= "WHERE transaction_id = $transaction_id ";
-    $edit_status_query = mysqli_query($connection, $query);
-    if(!$edit_status_query){
-        die('Failed to update status.'.mysqli_error($connection));
-    }
+    $query .="status = ? ";
+    $query .= "WHERE transaction_id = ? ";
+    
+    $stmt = $connection->prepare($query);
+    $stmt->bind_param('ii', $status, $transaction_id);
+    $stmt->execute();
+    $stmt->close();
+    
+//    $query = "UPDATE oil_transaction SET ";
+//    $query .="status = '$status' ";
+//    $query .= "WHERE transaction_id = $transaction_id ";
+//    $edit_status_query = mysqli_query($connection, $query);
+//    if(!$edit_status_query){
+//        die('Failed to update status.'.mysqli_error($connection));
+//    }
 }
 
 function updatePayTransactionStatus($transaction_id, $status){
     global $connection;
     $query = "UPDATE payment SET ";
-    $query .="status = '$status' ";
-    $query .= "WHERE transaction_id = $transaction_id ";
-    $edit_status_query = mysqli_query($connection, $query);
-    if(!$edit_status_query){
-        die('Failed to update status.'.mysqli_error($connection));
-    }
+    //$query .="status = '$status' ";
+    //$query .= "WHERE transaction_id = $transaction_id ";
+    $query .= "status=? WHERE transaction_id=?";
+    
+    $stmt = $connection->prepare($query);
+    $stmt->bind_param('ii', $status, $transaction_id);
+    $stmt->execute();
+    $stmt->close();
 }
 
 
@@ -135,13 +178,15 @@ function insertLogs($transaction_id){
     $trader_id = $_SESSION['user_id'];
     $date = date("Y.m.d");
     
-    $query = "INSERT INTO logs(transaction_id,trader_id,date)";
-    $query .= "VALUES('{$transaction_id}','{$trader_id}','{$date}') ";
-      
-    $insertLogs = mysqli_query($connection, $query);
-    if(!$insertLogs){
-        die('Insert Logs fail.'.mysqli_error($connection));
-    }
+    $query = "INSERT INTO logs(transaction_id,trader_id,date) ";
+    //$query .= "VALUES('{$transaction_id}','{$trader_id}','{$date}') ";
+    $query .= "VALUES (?, ?, ?) ";     
+    //i - integer  d - double s - string  b - BLOB
+    $stmt = $connection->prepare($query);
+    $stmt->bind_param("iis", $transaction_id, $trader_id, $date);
+
+    $stmt->execute();
+    $stmt->close();
 }
 
 ?>   

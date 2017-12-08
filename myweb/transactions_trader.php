@@ -217,7 +217,48 @@ date_default_timezone_set('UTC');
                 //cancel    
                 if(isset($_GET['cancel_transaction_id'])){
                     $cancel_transaction_id = $_GET['cancel_transaction_id'];
-                    //update oil transaction
+                    //get transaction information
+                    $query = "SELECT client_id,oil_amount,value,commision_oil,commision_cash FROM oil_transaction WHERE transaction_id = '{$cancel_transaction_id}' ";
+
+                    $stmt = $connection->prepare($query);
+                    $stmt->execute();
+                    if (!($res = $stmt->get_result())) {
+                        echo "Getting result set failed: (" . $stmt->errno . ") " . $stmt->error;
+                    }
+                    while( $row = $res->fetch_assoc() ){
+                        $client_id =$row['client_id'];
+                        $oil_amount =$row['oil_amount'];
+                        $value =$row['value'];
+                        $commision_oil =$row['commision_oil'];
+                        $commision_cash =$row['commision_cash'];
+                    }
+                    $res->close();
+                    
+                    //update oil balance & cash balance
+                    $cash_balance = getCashBalance($client_id);
+                    $oil_balance = getOilBalance($client_id);
+                    
+                    //buy transaction
+                    //oil balance will be subtracted.
+                    //cash balance will be added.
+//                    if($oil_amount>0){
+                        $new_oil_balance = $oil_balance - $oil_amount;
+                        $new_cash_balance = $cash_balance + $value;
+//                    }else{//sell transaction
+//                        $new_oil_balance = $oil_balance - $oil_amount;
+//                        $new_cash_balance = $cash_balance + $value;
+//                    }
+                    if($commision_oil != NULL){
+                        $new_oil_balance = $new_oil_balance + $commision_oil;
+                    }
+                    if($commision_cash != NULL){
+                        $new_cash_balance = $new_cash_balance + $commision_cash;
+                    }
+                    
+                    updateOilBalance($client_id,$new_oil_balance);
+                    updateCashBalance($client_id,$new_cash_balance);
+                    
+                    //update status
                     $status = -1;//0:submitted, 1:done -1:cancel
                     updateOilTransactionStatus($cancel_transaction_id, $status);
                     

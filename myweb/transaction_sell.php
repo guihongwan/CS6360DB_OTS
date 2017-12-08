@@ -67,8 +67,8 @@ date_default_timezone_set('UTC');
       $new_cash_balance = $cash_balance-$value;
       if(isset($commission_cash)){
           $new_cash_balance = $new_cash_balance - $commission_cash;
-          updateCashBalance($client_id,$new_cash_balance);
       }
+      updateCashBalance($client_id,$new_cash_balance);
       
       //issue transaction
       if(isset($commission_oil)){
