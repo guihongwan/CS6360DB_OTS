@@ -13,8 +13,12 @@
             <div class="col-md-8">
                 
                 <h1 class="page-header">
-                     
-                    <small>Research Results</small>
+                    Search Results 
+                    <small>
+                       <?php 
+                        if(isset($_POST['search'])) echo $_POST['search']; 
+                        ?>
+                    </small>
                 </h1>
                 
                 <?php

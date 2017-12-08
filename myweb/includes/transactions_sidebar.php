@@ -3,7 +3,7 @@
                 <!-- Search Well -->
                 <div class="well">
                     <h4>Search</h4>
-                    <form action="search.php" method="post">
+                    <form action="search_clients.php" method="post">
                       <div class="input-group">
                         <input name="search" type="text" class="form-control">
                         <span class="input-group-btn">
