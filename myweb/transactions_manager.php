@@ -2,6 +2,7 @@
 
 <!-- Navigation -->
 <?php include "includes/navigation.php"; ?>
+<?php include "transactions/functions.php"; ?>
 
    
     <!-- Page Content -->

@@ -1,3 +1,6 @@
+<?php 
+date_default_timezone_set('UTC');
+?>
 <div class="col-md-4">
                 
                 <!-- Contact Well -->

@@ -36,6 +36,7 @@
         if( isset($db_username) && ($username === $db_username) &&
               isset($db_username) && ($password === $db_password) ){
                 
+                $_SESSION['user_id'] = $db_id;
                 $_SESSION['user_username'] = $db_username;
                 $_SESSION['user_firstname'] = $db_firstname;
                 $_SESSION['user_lastname'] = $db_lastname;
@@ -53,6 +54,7 @@
 
             if($query_login){
                 if($row = mysqli_fetch_assoc($query_login)){
+                    
                     $db_id =$row['user_id'];
                     $db_username =$row['user_username'];
                     $db_password =$row['user_password'];
@@ -69,6 +71,7 @@
             if( isset($db_username) && ($username === $db_username) &&
                   isset($db_password) && ($password === $db_password) ){
 
+                    $_SESSION['user_id'] = $db_id;
                     $_SESSION['user_username'] = $db_username;
                     $_SESSION['user_firstname'] = $db_firstname;
                     $_SESSION['user_lastname'] = $db_lastname;
